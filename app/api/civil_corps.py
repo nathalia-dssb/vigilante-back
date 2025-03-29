@@ -5,6 +5,9 @@ from bson.errors import InvalidId
 
 router = APIRouter()
 
+# Añadir esta línea para permitir la importación como 'civil_corps'
+civil_corps = router
+
 @router.post("/civil-corps", response_model=CuerpoCivilSchema)
 def create_new_civil_corps(civil_corps: CuerpoCivilSchema):
     civil_corps_data = civil_corps.dict(exclude_unset=True)

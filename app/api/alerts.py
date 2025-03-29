@@ -6,6 +6,9 @@ from bson import ObjectId
 
 router = APIRouter()
 
+# Añadir esta línea para permitir la importación como 'alert'
+alert = router
+
 @router.post("/alerts", response_model=AlertaSchema)
 def save_alert(alert: AlertaSchema):
     alert_data = alert.dict(exclude_unset=True)
@@ -26,3 +29,7 @@ def get_alert_by_id(alert_id: str):
         raise HTTPException(status_code=404, detail=f"Alert with id {alert_id} not found")
     except InvalidId:
         raise HTTPException(status_code=400, detail=f"Invalid alert ID format: {alert_id}")
+
+@router.get('/alerts', response_model=list[AlertaSchema])
+def get_all_alerts():
+    return list(get_alert(alert_id) for alert_id in get_alerts_ids())
