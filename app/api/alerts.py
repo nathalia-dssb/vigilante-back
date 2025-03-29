@@ -9,9 +9,11 @@ router = APIRouter()
 # Añadir esta línea para permitir la importación como 'alert'
 alert = router
 
+alert = router
+
 @router.post("/alerts", response_model=AlertaSchema)
 def save_alert(alert: AlertaSchema):
-    alert_data = alert.dict(exclude_unset=True)
+    alert_data = alert.model_dump(exclude_unset=True)  # Cambiado de dict() a model_dump() para Pydantic V2
     if "_id" in alert_data:
         del alert_data["_id"]
     
@@ -35,6 +37,7 @@ def get_all_alerts():
     """
     Recupera todas las alertas de la base de datos
     """
-    from app.config.db import db
-    alerts_collection = db.alerts  # Asumiendo que tu colección se llama 'alerts'
-    return alerts_collection.find({})  # Encuentra todos los documentos en la colección
+    from app.db.database import get_db
+    db = get_db()
+    alerts = db.alertas.find({})  # Asegúrate de que 'alertas' es el nombre correcto de tu colección
+    return list(alerts)

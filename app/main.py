@@ -1,5 +1,4 @@
 from typing import Union
-
 from fastapi import FastAPI
 from app.api.alerts import alert  # alert es ya un APIRouter
 from app.api.citizens import citizens  # citizens es ya un APIRouter  
@@ -8,13 +7,13 @@ from app.routers.chatbot_router import router as chatbot_router
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
-
-load_dotenv()  # Esto carga las variables de .env
-from fastapi import FastAPI
-from app.routers.chatbot_router import router as chatbot_router  # Importar el router
-
 from PIL import Image
 import requests
+
+load_dotenv()  # Esto carga las variables de .env
+
+# Crear la instancia de FastAPI
+app = FastAPI()
 
 origins = [
     os.getenv('FRONTEND_URL', 'http://localhost:3000')
@@ -33,13 +32,12 @@ def read_root():
     return {"message": "Bienvenido al sistema de monitoreo y chatbot!"}
 
 # Incluir los routers
-app.include_router(alert, prefix="/api", tags=["alerts"])  # Eliminar .router
-app.include_router(citizens, prefix="/api", tags=["citizens"])  # Eliminar .router
-app.include_router(civil_corps, prefix="/api", tags=["civil-corps"])  # Eliminar .router
+app.include_router(alert, prefix="/api", tags=["alerts"])
+app.include_router(citizens, prefix="/api", tags=["citizens"])
+app.include_router(civil_corps, prefix="/api", tags=["civil-corps"])
 app.include_router(chatbot_router)
 
 # Ejecutar el servidor
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
