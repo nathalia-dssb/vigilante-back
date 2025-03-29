@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
+uri = "mongodb+srv://nathdsbb:u5zX3PSEqDjd60kt@vigilante.eoponc3.mongodb.net/?retryWrites=true&w=majority&appName=vigilante"
 
 client = MongoClient(uri, server_api=ServerApi('1'))
 db = client.vigilante_db

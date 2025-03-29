@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import Optional
 from bson import ObjectId
+from typing import Any, Optional
 
 class PyObjectId(str):
     @classmethod
@@ -9,10 +9,16 @@ class PyObjectId(str):
         yield cls.validate
 
     @classmethod
-    def validate(cls, v):
-        if not ObjectId.is_valid(v):
-            raise ValueError("Invalid ObjectId")
-        return str(v)
+    def validate(cls, v: Any, field, config):
+        if isinstance(v, ObjectId):
+            return str(v)
+        if ObjectId.is_valid(v):
+            return str(v)
+        raise ValueError("Invalid ObjectId")
+
+    @classmethod
+    def __get_pydantic_json_schema__(cls, field_schema):
+        field_schema.update(type="string", format="objectid")
 
 class CoordenadaSchema(BaseModel):
     latitud: float
@@ -67,3 +73,5 @@ class CuerpoCivilSchema(BaseModel):
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
+
+
