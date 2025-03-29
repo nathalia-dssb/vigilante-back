@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 load_dotenv()  # Esto carga las variables de .env
 from fastapi import FastAPI
 from app.routers.chatbot_router import router as chatbot_router  # Importar el router
+from routes.alerts import alert
 
 
 # Inicializar la aplicación FastAPI
@@ -23,3 +24,4 @@ def read_root():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
