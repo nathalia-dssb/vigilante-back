@@ -5,6 +5,9 @@ from bson.errors import InvalidId
 
 router = APIRouter()
 
+# Añadir esta línea para permitir la importación como 'citizens'
+citizens = router
+
 @router.post("/citizens", response_model=CiudadanoSchema)
 def create_new_citizen(citizen: CiudadanoSchema):
     citizen_data = citizen.dict(exclude_unset=True)
