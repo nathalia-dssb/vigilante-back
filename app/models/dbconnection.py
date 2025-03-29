@@ -10,6 +10,7 @@ uri = "mongodb+srv://nathdsbb:u5zX3PSEqDjd60kt@vigilante.eoponc3.mongodb.net/?re
 
 client = MongoClient(uri, server_api=ServerApi('1'))
 database = client.vigilante_db
+collection = database.alerts
 
 try:
     client.admin.command('ping')
