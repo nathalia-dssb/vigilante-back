@@ -32,4 +32,9 @@ def get_alert_by_id(alert_id: str):
 
 @router.get('/alerts', response_model=list[AlertaSchema])
 def get_all_alerts():
-    return list(get_alert(alert_id) for alert_id in get_alerts_ids())
+    """
+    Recupera todas las alertas de la base de datos
+    """
+    from app.config.db import db
+    alerts_collection = db.alerts  # Asumiendo que tu colección se llama 'alerts'
+    return alerts_collection.find({})  # Encuentra todos los documentos en la colección
