@@ -5,12 +5,10 @@ from app.routers.chatbot_router import router as chatbot_router  # Importar el r
 from routes.alerts import alert
 
 
-# Inicializar la aplicación FastAPI
-app = FastAPI(
-    title="Sistema de Monitoreo y Chatbot",
-    description="API para gestionar alertas y proporcionar un chatbot interactivo.",
-    version="1.0.0"
-)
+
+app.include_router(alerts.router, prefix="/api", tags=["alerts"])
+app.include_router(citizens.router, prefix="/api", tags=["citizens"])
+app.include_router(civil_corps.router, prefix="/api", tags=["civil-corps"])
 
 # Incluir los routers
 app.include_router(chatbot_router)
@@ -24,4 +22,3 @@ def read_root():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-

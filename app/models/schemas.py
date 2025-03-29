@@ -1,41 +1,41 @@
-from bson import ObjectId
 from pydantic import BaseModel, Field
-from typing import Optional
-import datetime
+from datetime import datetime
+from bson import ObjectId
+from typing import Any, Optional
 
-# Clase PyObjectId compatible con Pydantic v2
-class PyObjectId(ObjectId):
+class PyObjectId(str):
     @classmethod
-    def __get_pydantic_json_schema__(cls, schema: dict):
-        schema.update({
-            'type': 'string',
-            'format': 'objectid',
-        })
-        return schema
+    def __get_validators__(cls):
+        yield cls.validate
 
     @classmethod
-    def __get_pydantic_core_schema__(cls, source, handler):
-        return handler(str)  # Usa str para validar ObjectId
+    def validate(cls, v: Any, field, config):
+        if isinstance(v, ObjectId):
+            return str(v)
+        if ObjectId.is_valid(v):
+            return str(v)
+        raise ValueError("Invalid ObjectId")
 
-#Modelo cuerpo_civil
-class CiudadanoSchema(BaseModel):
-    id: str = Field(default_factory=lambda: str(PyObjectId()), alias="_id")
-    matricula: str 
-    tipo_vehiculo: str 
-    encargado: str 
-    zona: str
-    user: str 
-    contrasena: str  
+    @classmethod
+    def __get_pydantic_json_schema__(cls, field_schema):
+        field_schema.update(type="string", format="objectid")
+
+class CoordenadaSchema(BaseModel):
+    latitud: float
+    longitud: float
+
+class AlertaSchema(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    suceso: str
+    ubicacion: CoordenadaSchema
+    fecha: datetime
+    clasificacion: str
 
     class Config:
-        from_attributes = True
-    
-    @classmethod
-    def from_document(cls, document):
-        document['_id'] = str(document['_id'])
-        return cls(**document)
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
 
-#Modelo ciudadano
 class DomicilioSchema(BaseModel):
     codigo_postal: int 
     calle: str 
@@ -44,7 +44,7 @@ class DomicilioSchema(BaseModel):
     colonia: str
 
 class CiudadanoSchema(BaseModel):
-    id: str = Field(default_factory=lambda: str(PyObjectId()), alias="_id")
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
     nombre: str 
     apellidos: str 
     curp: str 
@@ -53,36 +53,25 @@ class CiudadanoSchema(BaseModel):
     sexo: str 
     correo: str
     telefono: str 
-    contrasena: str  
+    contrasena: str
 
     class Config:
-        from_attributes = True
-        arbitrary_types_allowed=True
-    
-    @classmethod
-    def from_document(cls, document):
-        document['_id'] = str(document['_id'])
-        return cls(**document)
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
 
-#Modelo alerta
-class CoordenadaSchema(BaseModel):
-    latitud: float
-    longitud: float
-
-class Alerta(BaseModel):
-    id: str = Field(default_factory=lambda: str(PyObjectId()), alias="_id")
-    suceso: str
-    ubicacion: CoordenadaSchema
-    fecha: datetime
-    clasificacion: str
+class CuerpoCivilSchema(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    matricula: str 
+    tipo_vehiculo: str 
+    encargado: str 
+    zona: str
+    user: str 
+    contrasena: str
 
     class Config:
-        from_attributes = True
-        arbitrary_types_allowed=True
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
 
-    # Método para construir el modelo a partir de un documento de MongoDB
-    @classmethod
-    def from_document(cls, document):
-        # Convierte el ObjectId a string antes de crear el modelo
-        document['_id'] = str(document['_id'])
-        return cls(**document)
+
