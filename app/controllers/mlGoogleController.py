@@ -7,6 +7,7 @@ from io import BytesIO
 from PIL import Image 
 import requests
 import base64
+import dicti
 
 def predict_custom_trained_model_sample(
     project: str,
@@ -56,7 +57,7 @@ def image_to_base64(image, format="JPEG"):
     image_str = base64.b64encode(buffer.getvalue()).decode("utf-8")
     return image_str
 
-url = "http://images.cocodataset.org/val2017/000000039769.jpg"
+url = "https://storage.googleapis.com/violence_images_bucket/violence_dataset/violence/V_374.mp4_frame2.jpg"
 image1 = download_image(url)
 image = image_to_base64(image1)
 
@@ -64,5 +65,5 @@ predict_custom_trained_model_sample(
     project="672257461501",
     endpoint_id="648418290783223808",
     location="us-central1",
-    instances={ "text": ["a photo of a cat", "a photo of a dog"], "image": image}
+    instances={ "text": dicti.siniestro, "image": image}
 )
