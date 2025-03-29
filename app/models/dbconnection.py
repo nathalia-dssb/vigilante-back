@@ -10,6 +10,7 @@ uri = "mongodb+srv://nathdsbb:u5zX3PSEqDjd60kt@vigilante.eoponc3.mongodb.net/?re
 
 client = MongoClient(uri, server_api=ServerApi('1'))
 database = client.vigilante_db
+collection = database.alerts
 
 try:
     client.admin.command('ping')
@@ -17,3 +18,11 @@ try:
 
 except Exception as e:
     print(e)
+
+async def get_one_alert(id):
+    alert = await collection.find_one({"_id": id})
+    return alert
+
+async def create_alert(alert):
+    response = collection.insert_one(alert)
+    return response

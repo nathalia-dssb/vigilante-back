@@ -66,8 +66,8 @@ class CiudadanoSchema(BaseModel):
 
 #Modelo alerta
 class CoordenadaSchema(BaseModel):
-    latitud: int
-    longitud: int
+    latitud: float
+    longitud: float
 
 class Alerta(BaseModel):
     id: str = Field(default_factory=lambda: str(PyObjectId()), alias="_id")
