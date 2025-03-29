@@ -45,9 +45,11 @@ class CoordenadaSchema(BaseModel):
 
 class AlertaSchema(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    suceso: str
+    title: str
+    descripcion: str
     ubicacion: CoordenadaSchema
     fecha: datetime
+    severidad: str
     clasificacion: str
 
     model_config = ConfigDict(

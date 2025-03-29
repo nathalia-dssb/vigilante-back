@@ -1,15 +1,17 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, FastAPI
 from google import genai
 import os
 
+app = FastAPI()
 router = APIRouter(prefix="/api/chatbot", tags=["Chatbot"])
 
+
 # Configuración directa (sin modelos Pydantic ni manejo complejo de errores)
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") or "TU_API_KEY_AQUI"  # ← Usa tu clave temporalmente
+GEMINI_API_KEY = "AIzaSyDiL7x2jREusEKSJu-vRxFmwSmrnIK41VE" # ← Usa tu clave temporalmente
 client = genai.Client(api_key=GEMINI_API_KEY)
 
-@router.post("/ask-")
-async def ask_simple(question: str):
+@router.get("/ask/")
+async def ask_simple(question: str):    
     """Endpoint mínimo para probar la conexión con Gemini"""
     try:
         response = client.models.generate_content(
@@ -23,3 +25,5 @@ async def ask_simple(question: str):
             "error": str(e),
             "details": "Revisa la consola para más información"
         }
+
+app.include_router(router)
