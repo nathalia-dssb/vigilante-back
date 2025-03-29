@@ -24,5 +24,5 @@ async def get_one_alert(id):
     return alert
 
 async def create_alert(alert):
-    response = await collection.insert_one(alert)
+    response = collection.insert_one(alert)
     return response
