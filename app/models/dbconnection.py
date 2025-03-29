@@ -18,3 +18,7 @@ try:
 
 except Exception as e:
     print(e)
+
+async def get_one_alert(id):
+    alert = await collection.find_one({"_id": id})
+    return alert
