@@ -1,2 +1,5 @@
 fastapi==0.115.12
 pymongo==4.11.3
+google-genai>=1.0.0
+uvicorn>=0.27.0  # Servidor ASGI
+pydantic==2.5.3                # Para validación de datos y modelos Pydantic
