@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from database import get_all_alerts, create_alert, get_one_alert, update_alert, delete_alert
+from database import get_one_alert
 from models import Alerta
 #manejador de errores de formato de ID
 from bson.errors import InvalidId
