@@ -1,3 +1,5 @@
+from typing import Union
+
 from fastapi import FastAPI
 from app.api.alerts import alert  # alert es ya un APIRouter
 from app.api.citizens import citizens  # citizens es ya un APIRouter  
@@ -11,7 +13,8 @@ load_dotenv()  # Esto carga las variables de .env
 from fastapi import FastAPI
 from app.routers.chatbot_router import router as chatbot_router  # Importar el router
 
-app = FastAPI()
+from PIL import Image
+import requests
 
 origins = [
     os.getenv('FRONTEND_URL', 'http://localhost:3000')
@@ -39,3 +42,4 @@ app.include_router(chatbot_router)
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
