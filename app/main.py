@@ -8,4 +8,4 @@ app = FastAPI()
 async def root():
     return {"message": "Hello World"}
 
-app.include_router(alerts)
+app.include_router(alert)
