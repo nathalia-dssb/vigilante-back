@@ -1,41 +1,61 @@
+from pydantic import BaseModel, Field, ConfigDict
+from datetime import datetime
 from bson import ObjectId
-from pydantic import BaseModel, Field
-from typing import Optional
-import datetime
+from typing import Any, Optional
+from pydantic_core import core_schema
+from pydantic import GetCoreSchemaHandler, GetJsonSchemaHandler
 
-# Clase PyObjectId compatible con Pydantic v2
-class PyObjectId(ObjectId):
+class PyObjectId(str):
     @classmethod
-    def __get_pydantic_json_schema__(cls, schema: dict):
-        schema.update({
-            'type': 'string',
-            'format': 'objectid',
-        })
-        return schema
+    def __get_validators__(cls):
+        yield cls.validate
 
     @classmethod
-    def __get_pydantic_core_schema__(cls, source, handler):
-        return handler(str)  # Usa str para validar ObjectId
-
-#Modelo cuerpo_civil
-class CiudadanoSchema(BaseModel):
-    id: str = Field(default_factory=lambda: str(PyObjectId()), alias="_id")
-    matricula: str 
-    tipo_vehiculo: str 
-    encargado: str 
-    zona: str
-    user: str 
-    contrasena: str  
-
-    class Config:
-        from_attributes = True
+    def validate(cls, v: Any):
+        if isinstance(v, ObjectId):
+            return str(v)
+        if ObjectId.is_valid(v):
+            return str(v)
+        raise ValueError("Invalid ObjectId")
     
     @classmethod
-    def from_document(cls, document):
-        document['_id'] = str(document['_id'])
-        return cls(**document)
+    def __get_pydantic_core_schema__(
+        cls, _source_type: Any, _handler: GetCoreSchemaHandler
+    ) -> core_schema.CoreSchema:
+        return core_schema.union_schema([
+            # Permite cadenas de texto
+            core_schema.chain_schema([
+                core_schema.str_schema(),
+                core_schema.no_info_plain_validator_function(cls.validate),
+            ]),
+            # Permite ObjectId directo
+            core_schema.chain_schema([
+                core_schema.is_instance_schema(ObjectId),
+                core_schema.no_info_plain_validator_function(lambda x: str(x)),
+            ]),
+        ])
 
-#Modelo ciudadano
+    @classmethod
+    def __get_pydantic_json_schema__(cls, _schema_generator: GetJsonSchemaHandler, _field_schema):
+        return {"type": "string", "format": "objectid"}
+
+class CoordenadaSchema(BaseModel):
+    latitud: float
+    longitud: float
+
+class AlertaSchema(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    suceso: str
+    ubicacion: CoordenadaSchema
+    fecha: datetime
+    clasificacion: str
+
+    model_config = ConfigDict(
+        validate_by_name=True,  # Reemplaza a allow_population_by_field_name
+        arbitrary_types_allowed=True,
+        json_encoders={ObjectId: str}
+    )
+
 class DomicilioSchema(BaseModel):
     codigo_postal: int 
     calle: str 
@@ -44,7 +64,7 @@ class DomicilioSchema(BaseModel):
     colonia: str
 
 class CiudadanoSchema(BaseModel):
-    id: str = Field(default_factory=lambda: str(PyObjectId()), alias="_id")
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
     nombre: str 
     apellidos: str 
     curp: str 
@@ -53,36 +73,25 @@ class CiudadanoSchema(BaseModel):
     sexo: str 
     correo: str
     telefono: str 
-    contrasena: str  
+    contrasena: str
 
-    class Config:
-        from_attributes = True
-        arbitrary_types_allowed=True
-    
-    @classmethod
-    def from_document(cls, document):
-        document['_id'] = str(document['_id'])
-        return cls(**document)
+    model_config = ConfigDict(
+        validate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_encoders={ObjectId: str}
+    )
 
-#Modelo alerta
-class CoordenadaSchema(BaseModel):
-    latitud: float
-    longitud: float
+class CuerpoCivilSchema(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id", default=None)
+    matricula: str 
+    tipo_vehiculo: str 
+    encargado: str 
+    zona: str
+    user: str 
+    contrasena: str
 
-class Alerta(BaseModel):
-    id: str = Field(default_factory=lambda: str(PyObjectId()), alias="_id")
-    suceso: str
-    ubicacion: CoordenadaSchema
-    fecha: datetime
-    clasificacion: str
-
-    class Config:
-        from_attributes = True
-        arbitrary_types_allowed=True
-
-    # Método para construir el modelo a partir de un documento de MongoDB
-    @classmethod
-    def from_document(cls, document):
-        # Convierte el ObjectId a string antes de crear el modelo
-        document['_id'] = str(document['_id'])
-        return cls(**document)
+    model_config = ConfigDict(
+        validate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_encoders={ObjectId: str}
+    )
