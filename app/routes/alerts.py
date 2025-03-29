@@ -11,7 +11,7 @@ async def get_alerts():
     alerts = await get_all_alerts()
     return alerts
 
-@alert.post("/api/alerts", response_model=Alerts)
+@alert.post("/api/alerts", response_model=Alerta)
 async def save_alerts(alert : Alerta):
     response = await create_alert(alert.dict(exclude_unset=True))
     if response:
