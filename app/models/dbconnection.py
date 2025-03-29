@@ -22,3 +22,7 @@ except Exception as e:
 async def get_one_alert(id):
     alert = await collection.find_one({"_id": id})
     return alert
+
+async def create_alert(alert):
+    response = await collection.insert_one(alert)
+    return response
