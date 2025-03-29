@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from database import get_all_alerts, create_alert, get_one_alert, update_alert, delete_alert
-from models import Alert
+from models import Alerta
 #manejador de errores de formato de ID
 from bson.errors import InvalidId
 
@@ -12,13 +12,13 @@ async def get_alerts():
     return alerts
 
 @alert.post("/api/alerts", response_model=Alerts)
-async def save_alerts(alert : Alert):
+async def save_alerts(alert : Alerta):
     response = await create_alert(alert.dict(exclude_unset=True))
     if response:
         return response
     raise HTTPException(400, "Something went wrong")
 
-@alert.get('/api/alerts/{id}', response_model=Alert)
+@alert.get('/api/alerts/{id}', response_model=Alerta)
 async def get_alert(id : str):
     try:
         alert = await get_one_alert(id)
