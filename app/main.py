@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 load_dotenv()  # Esto carga las variables de .env
 from fastapi import FastAPI
 from app.routers.chatbot_router import router as chatbot_router  # Importar el router
-from routes.alerts import alert
 
 
 # Inicializar la aplicación FastAPI
